@@ -112,19 +112,35 @@
             outline: none;
             border: 1px solid dimgrey;
             border-radius: 2px;
-            cursor: pointer;
             padding: 0em 1em;
         }
 
         h3 {
             text-align: center;
             font-weight: 600;
+            margin-top: 6px;
+            margin-bottom: 0px;
+        }
+
+        .legend-clear-filter {
+            text-align: center;
+            height: 20px;
+            vertical-align: middle;
+            font-size: 12px;
+            cursor: pointer;
+            color: #888;
+            margin-bottom: 12px;
         }
 
         .legend-item {
             height: 20px;
             vertical-align: middle;
             font-size: 12px;
+            cursor: pointer;
+        }
+
+        .legend-item-selected {
+            font-weight: 800;
         }
 
         .legend-item-line {
@@ -182,6 +198,7 @@
     </div>
     <div id="legend">
         <h3>Kapcsolatok</h3>
+        <div class="legend-clear-filter" id="legend-clear-filter" style="visibility: hidden;">x Kijelölés törlése</div>
         <div class="legend-item"><div class="legend-item-line" style="background-color: #ea5545"></div>Oktatás</div>
         <div class="legend-item"><div class="legend-item-line" style="background-color: #f46a9b"></div>Könyvgyűjtés</div>
         <div class="legend-item"><div class="legend-item-line" style="background-color: #ef9b20"></div>Irodalmi mecenatúra</div>
