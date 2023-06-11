@@ -183,6 +183,15 @@
             right: 17em;
             top: 1em;
         }
+
+        #node-clear-filter {
+            position: absolute;
+            right: 1em;
+            top: 3.5em;
+            text-align: right;
+            cursor: pointer;
+            color: #666;
+        }
     </style>
     <div id="sigma-container"></div>
     <div id="search">
@@ -196,6 +205,7 @@
         <div class="input"><label for="zoom-out">Zoom out</label><button id="zoom-out">-</button></div>
         <div class="input"><label for="zoom-reset">Reset zoom</label><button id="zoom-reset">⊙</button></div>
     </div>
+    <div id="node-clear-filter" style="visibility: hidden;">x Kijelölés törlése</div>
     <div id="legend">
         <h3>Kapcsolatok</h3>
         <div class="legend-clear-filter" id="legend-clear-filter" style="visibility: hidden;">x Kijelölés törlése</div>
