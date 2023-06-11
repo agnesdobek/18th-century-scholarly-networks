@@ -18,6 +18,7 @@ interface Cluster {
 // Type and declare internal state:
 interface State {
     hoveredNode?: string;
+    isNodeSelectionPermanent: boolean;
     searchQuery: string;
 
     // State derived from query:
@@ -30,7 +31,7 @@ interface State {
     selectedEdgeCategory?: string;
     selectedEdgeCategoryItem?: HTMLElement;
 }
-const state: State = { searchQuery: "" };
+const state: State = { searchQuery: "", isNodeSelectionPermanent: false };
 
 var graph;
 
@@ -50,6 +51,7 @@ const nodeDetailsArea = document.getElementById("node-details-item-area") as HTM
 const nodeDetailsReligion = document.getElementById("node-details-item-religion") as HTMLElement;
 const nodeDetailsOccupation = document.getElementById("node-details-item-occupation") as HTMLElement;
 
+const nodeClearFilter = document.getElementById("node-clear-filter") as HTMLElement;
 const legendClearFilter = document.getElementById("legend-clear-filter") as HTMLElement;
 
 const searchInput = document.getElementById("search-input") as HTMLInputElement;
@@ -93,6 +95,9 @@ Array.from(document.getElementsByClassName("legend-item")).forEach(legendItem =>
     });
 });
 
+nodeClearFilter.addEventListener("click", () => {
+    setHoveredNode(undefined, true);
+});
 legendClearFilter.addEventListener("click", () => {
     setHoveredEdgeType(undefined, undefined, true);
 });
@@ -175,11 +180,14 @@ function loadRenderer(clusterAttribute, clusterOtherLabel) {
     });
 
     // Bind graph interactions:
+    renderer.on("clickNode", ({ node }) => {
+        setHoveredNode(node, true);
+    });
     renderer.on("enterNode", ({ node }) => {
-        setHoveredNode(node);
+        setHoveredNode(node, false);
     });
     renderer.on("leaveNode", () => {
-        setHoveredNode(undefined);
+        setHoveredNode(undefined, false);
     });
 
     // Render nodes accordingly to the internal state:
@@ -256,6 +264,7 @@ function setSearchQuery(query: string) {
         // autocomplete:
         if (suggestions.length === 1 && suggestions[0].label === query) {
             state.selectedNode = suggestions[0].id;
+            setHoveredNode(suggestions[0].id, true);
             state.suggestions = undefined;
 
             // Move the camera to center it on the selected node:
@@ -272,7 +281,9 @@ function setSearchQuery(query: string) {
     }
     // If the query is empty, then we reset the selectedNode / suggestions state:
     else {
-        state.selectedNode = undefined;
+        if (!state.isNodeSelectionPermanent) {
+            state.selectedNode = undefined;
+        }
         state.suggestions = undefined;
     }
 
@@ -298,18 +309,28 @@ function tearDown() {
     renderer.clear();
 }
 
-function setHoveredNode(node) {
+function setHoveredNode(node, isPermanent) {
     if (node) {
-        if (!state.selectedEdgeCategory) {
+        if (!state.selectedEdgeCategory && (isPermanent || !state.isNodeSelectionPermanent)) {
             state.hoveredNode = node;
             state.hoveredNeighbors = new Set(graph.neighbors(node));
+            state.isNodeSelectionPermanent = isPermanent;
+            if (isPermanent) {
+                state.selectedNode = node;
+                nodeClearFilter.style.visibility = "visible";
+            }
         }
 
         showNodeDetails(graph.getNodeAttributes(node));
     } else {
-        if (!state.selectedEdgeCategory) {
+        if (!state.selectedEdgeCategory && (isPermanent || !state.isNodeSelectionPermanent)) {
             state.hoveredNode = undefined;
             state.hoveredNeighbors = undefined;
+            state.isNodeSelectionPermanent = false;
+            if (isPermanent) {
+                state.selectedNode = undefined;
+                nodeClearFilter.style.visibility = "hidden";
+            }
         }
 
         hideNodeDetails();
