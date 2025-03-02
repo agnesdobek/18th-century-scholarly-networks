@@ -3,6 +3,7 @@ import Sigma from "sigma";
 import Graph from "graphology";
 import { Coordinates, EdgeDisplayData, NodeDisplayData } from "sigma/types";
 
+import dataAreaEn from "./area_en.json";
 import dataArea from "./area.json";
 import dataReligion from "./religion.json";
 
@@ -35,10 +36,11 @@ const state: State = { searchQuery: "", isNodeSelectionPermanent: false };
 
 var graph;
 
-loadGraph(dataArea);
+loadGraph(dataAreaEn);
 
 // Retrieve some useful DOM elements:
 const container = document.getElementById("sigma-container") as HTMLElement;
+const areaEnBtn = document.getElementById("area-en") as HTMLButtonElement;
 const areaBtn = document.getElementById("area") as HTMLButtonElement;
 const religionBtn = document.getElementById("religion") as HTMLButtonElement;
 const zoomInBtn = document.getElementById("zoom-in") as HTMLButtonElement;
@@ -57,10 +59,15 @@ const legendClearFilter = document.getElementById("legend-clear-filter") as HTML
 const searchInput = document.getElementById("search-input") as HTMLInputElement;
 const searchSuggestions = document.getElementById("suggestions") as HTMLDataListElement;
 
+areaEnBtn.addEventListener("click", () => {
+    renderer.kill();
+    loadGraph(dataAreaEn);
+    renderer = loadRenderer("geographic group", "Egyéb");
+});
 areaBtn.addEventListener("click", () => {
     renderer.kill();
     loadGraph(dataArea);
-    renderer = loadRenderer("geographic area", "Egyéb");
+    renderer = loadRenderer("geographic group", "Egyéb");
 });
 religionBtn.addEventListener("click", () => {
     renderer.kill();
@@ -68,7 +75,7 @@ religionBtn.addEventListener("click", () => {
     renderer = loadRenderer("religion", "?");
 });
 
-var renderer = loadRenderer("geographic area", "Egyéb");
+var renderer = loadRenderer("geographic group", "Egyéb");
 
 const camera = renderer.getCamera();
 

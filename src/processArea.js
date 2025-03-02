@@ -1,5 +1,6 @@
 const fs = require('fs');
 const fileName = './area.json';
+const fileNameEn = './area_en.json';
 const file = require(fileName);
 
 // Taken from here: https://www.heavy.ai/blog/12-color-palettes-for-telling-better-stories-with-your-data
@@ -12,10 +13,15 @@ let nodeColorsByArea = {
     "Eger": "#fd7f6f",
     "Róma": "#7eb0d5",
     "Bécs": "#b2e061",
-    "Pest": "#bd7ebe",
+    "Pest/Buda": "#bd7ebe",
     "Pozsony": "#ffb55a",
-    "Kassa": "#fdcce5",
+    "Győr": "#cfbe35",
+    "Szombathely": "#cfbe35",
     "Pécs": "#beb9db",
+    "Egyéb magyar": "#cdacb5",
+    "Egyéb itáliai": "#8bd3c7",
+    "Nagyszombat": "#a0a0a0",
+    "Egyéb": "#606060"
 }
 
 let edgeColors = {
@@ -33,10 +39,24 @@ let edgeColors = {
     "Irodalmi mecenatúra, könyvgyűjtés": "#ef9b20"
 }
 
+let englishDictionary = {
+    "Eger": "Eger",
+    "Róma": "Rome",
+    "Bécs": "Vienna",
+    "Pest": "Pest",
+    "Pozsony": "Bratislava",
+    "Kassa": "Košice",
+    "Pécs": "Pécs",
+    "Egyéb magyar": "Other Hungarian",
+    "Egyéb itáliai": "Other Italian",
+    "Nagyszombat": "Trnava",
+    "Egyéb": "Other"
+}
+
 var degrees = {};
 
 for (var i = 0; i < file.edges.length; i++) {
-    file.edges[i].attributes.size = file.edges[i].attributes.weight == 0.1 ? 0.01 : 4;
+    file.edges[i].attributes.size = file.edges[i].attributes.weight == 0.1 ? 0.01 : 1;
     let label = file.edges[i].attributes.label;
     if (edgeColors[label]) {
         file.edges[i].attributes.color = edgeColors[label];
@@ -52,8 +72,8 @@ for (var i = 0; i < file.edges.length; i++) {
 
 for (var i = 0; i < file.nodes.length; i++) {
     let nodeId = file.nodes[i].key;
-    let area = file.nodes[i].attributes["geographic area"];
-    file.nodes[i].attributes.size = nodeId == 1 ? 30 : 10 + (degrees[nodeId] ?? 0);
+    let area = file.nodes[i].attributes["geographic group"];
+    file.nodes[i].attributes.size = nodeId == 1 ? 30 : 10 + (degrees[nodeId] / 3 ?? 0);
     file.nodes[i].attributes.color = nodeColorsByArea[area] ? nodeColorsByArea[area] : "#8bd3c7";
 }
 
@@ -61,10 +81,23 @@ file["attributes"] = undefined;
 file["options"] = undefined;
 
 
-//file.key = "new value";
-
 fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
     if (err) return console.log(err);
     //console.log(JSON.stringify(file));
     console.log('writing to ' + fileName);
+});
+
+// create English version
+for (var i = 0; i < file.nodes.length; i++) {
+    let nodeId = file.nodes[i].key;
+    let area = file.nodes[i].attributes["geographic group"];
+    if (area in englishDictionary) {
+        file.nodes[i].attributes["geographic group"] = englishDictionary[area];
+    }
+}
+
+fs.writeFile(fileNameEn, JSON.stringify(file), function writeJSON(err) {
+    if (err) return console.log(err);
+    //console.log(JSON.stringify(file));
+    console.log('writing to ' + fileNameEn);
 });

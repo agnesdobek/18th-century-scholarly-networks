@@ -32,7 +32,7 @@ let edgeColors = {
 var degrees = {};
 
 for (var i = 0; i < file.edges.length; i++) {
-    file.edges[i].attributes.size = file.edges[i].attributes.weight == 0.1 ? 0.01 : 4;
+    file.edges[i].attributes.size = file.edges[i].attributes.weight == 0.1 ? 0.01 : 1;
     let label = file.edges[i].attributes.label;
     if (edgeColors[label]) {
         file.edges[i].attributes.color = edgeColors[label];
@@ -49,7 +49,7 @@ for (var i = 0; i < file.edges.length; i++) {
 for (var i = 0; i < file.nodes.length; i++) {
     let nodeId = file.nodes[i].key;
     let religion = file.nodes[i].attributes["religion"];
-    file.nodes[i].attributes.size = nodeId == 1 ? 30 : 10 + (degrees[nodeId] ?? 0);
+    file.nodes[i].attributes.size = nodeId == 1 ? 30 : 10 + (degrees[nodeId] / 3 ?? 0);
     file.nodes[i].attributes.color = nodeColorsByReligion[religion] ? nodeColorsByReligion[religion] : "#8bd3c7";
 }
 
